@@ -231,7 +231,7 @@ be used with SETF."))
         (bordeaux-threads:with-lock-held (*log-lock*)
           (if (> (length msg) 1024)
               (progn
-                (princ (subseq msg 0 1024) *log-file*)
+                (princ (subseq msg 0 16386) *log-file*)
                 (princ "... output too long - terminating" *log-file*)
                 (terpri *log-file*))
               (princ msg *log-file*))
