@@ -229,7 +229,7 @@ be used with SETF."))
     (defun always-log (fmt &rest args)
       (let ((msg (apply #'format nil fmt args)))
         (bordeaux-threads:with-lock-held (*log-lock*)
-          (if (> (length msg) 1024)
+          (if (> (length msg) 16386)
               (progn
                 (princ (subseq msg 0 16386) *log-file*)
                 (princ "... output too long - terminating" *log-file*)
