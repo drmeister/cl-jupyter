@@ -84,6 +84,7 @@
    #:*handle-comm-open-hook*
    #:*handle-comm-msg-hook*
    #:*handle-comm-close-hook*
+   #:*read-code-hook*
    #:*cl-jupyter-widget-display-hook*
    #:logg
    ))

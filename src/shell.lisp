@@ -34,6 +34,8 @@
   "Set this to a function to invoke a callback whenever an comm_msg message is received")
 (defvar *handle-comm-close-hook* nil
   "Set this to a function to invoke a callback whenever an comm_close message is received")
+(defvar *read-code-hook* nil
+  "Set this to a function that will take a string and return a form that will be evaluated")
 
 (defparameter *sort-encoded-json* nil
   "Set to T if you want json dictionaries to be sorted before they are sent out")

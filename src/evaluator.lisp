@@ -81,7 +81,9 @@ The history of evaluations is also saved by the evaluator.
         code cl-jupyter:*kernel*)
   (let ((execution-count (+ (length (evaluator-history-in evaluator)) 1)))
     (let ((code-to-eval (handler-case
-                            (read-from-string (format nil "(progn ~A~%)" code))
+                            (if *read-code-hook*
+                                (funcall *read-code-hook* code)
+                                (read-from-string (format nil "(progn ~A~%)" code)))
                           (END-OF-FILE (err) (list :read-error-eof (format nil "~A" (class-name (class-of err)))))
                           #+clasp(condition (err)
                                    (list :read-error (format nil "~A (condition of type ~A)" err (class-name (class-of err)))))
