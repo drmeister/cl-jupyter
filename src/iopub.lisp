@@ -47,6 +47,7 @@
 
 (defun send-execute-raw-display-object (iopub parent-msg execution-count display-obj &key (key nil))
   (logg 2 "iopub.lisp::send-execute-raw-display-object    display-obj -> ~s~%" display-obj)
+  (logg 2 "iopub.lisp::send-execute-raw-display-object    (display-object-data display-obj) -> ~s~%" (display-object-data display-obj))
   (let ((result-msg (make-message parent-msg "execute_result" nil
                                   `(("execution_count" . ,execution-count)
                                     ("data" . ,(display-object-data display-obj))

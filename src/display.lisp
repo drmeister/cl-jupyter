@@ -153,6 +153,7 @@ Lisp printer. In most cases this is enough but specializations are
 	      ("griacias" . (1 2 3))))
 
 (defun display-dispatch (value render-alist)
+  (cl-jupyter:logg 2 "Entered display-dispatch~%")
   (if (typep value 'display-object)
       value ; already displayed
       ;; otherwise needs to display

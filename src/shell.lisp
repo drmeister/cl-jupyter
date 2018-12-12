@@ -321,7 +321,7 @@ with the symbol to the left of the cursor."
                                :key (kernel-key shell)))
 	      (logg 2 "=> STDOUT = ~S~%" stdout)
 	      (logg 2 "=> STDERR = ~S~%" stderr)
-	      (logg 2 "=> Execution count = ~A~%" execution-count)
+	      (logg 2 "=> Execution count ... = ~A~%" execution-count)
 	      (logg 2 "=> results = ~a~%" (let ((*print-readably* nil)) (format nil "~S" results)))
 	      ;; broadcast the code to connected frontends
 	      (send-execute-code (kernel-iopub (kernel shell)) msg execution-count code :key (kernel-key shell))
@@ -340,6 +340,7 @@ with the symbol to the left of the cursor."
 	      (when (and stderr (> (length stderr) 0))
 		(send-stream (kernel-iopub (kernel shell)) msg "stderr" stderr :key (kernel-key shell)))
 	      ;; send the first result
+	      (logg 2 "About to send first result ~%")
               (cond
                 ((and *cl-jupyter-widget-display-hook*
                       (funcall *cl-jupyter-widget-display-hook*
