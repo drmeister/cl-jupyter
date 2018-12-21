@@ -87,6 +87,7 @@
    #:*read-code-hook*
    #:*cl-jupyter-widget-display-hook*
    #:logg
+   #:logg-backtrace
    ))
 
 (defpackage #:cl-jupyter-user

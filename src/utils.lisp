@@ -205,6 +205,14 @@ be used with SETF."))
   (setf *log-enabled* t)
   (setf *log-level* 2))
 
+(defmacro with-log-file ((fout) &body body)
+  "Create an environment where only one thread can write to the log."
+  `(bordeaux-threads:with-lock-held (*log-lock*)
+     (let ((,fout *log-file*))
+       (progn
+         ,@body)
+       (finish-output *log-file*))))
+
 #+cl-jupyter-log
 (eval-when (:execute :load-toplevel)
   (let* ((log-file-name (make-pathname :name (format nil "cl-jupyter-~a" (getpid))
@@ -219,16 +227,11 @@ be used with SETF."))
                               :if-does-not-exist :create))
     (setf *trace-output* *log-file*)
     (format *log-file* "Log started up~%")
-    (setf *log-lock* (bordeaux-threads:make-lock "cl-jupyter-log"))
+    (setf *log-lock* (bordeaux-threads:make-recursive-lock "cl-jupyter-log"))
     (format *log-file* "About to start logging cl-jupyter~%")
-    (defun backtrace-log (fmt &rest args)
-      (let ((msg (apply #'format nil fmt args)))
-        (bordeaux-threads:with-lock-held (*log-lock*)
-          (princ msg *log-file*)
-          (finish-output *log-file*))))
     (defun always-log (fmt &rest args)
-      (let ((msg (apply #'format nil fmt args)))
-        (bordeaux-threads:with-lock-held (*log-lock*)
+      (with-log-file (*log-file*)
+        (let ((msg (apply #'format nil fmt args)))
           (if (> (length msg) 16386)
               (progn
                 (princ (subseq msg 0 16386) *log-file*)
@@ -242,22 +245,26 @@ be used with SETF."))
 (progn
   (defmacro logg (level fmt &rest args)
     "Log the passed ARGS using the format string FMT and its
- arguments ARGS."
+ arguments ARGS. If *log-enabled* is NIL then nothing is logged.
+If *log-enabled* is set to T then logging is turned on."
     (if (or (not *log-enabled*)
             (> level *log-level*))
         (values) ;; disabled
         ;; when enabled
-        `(progn (always-log ,fmt ,@args))))
-  (defmacro logg-backtrace (fmt &rest args)
-    "Log the passed ARGS using the format string FMT and its
- arguments ARGS."
-    `(progn (backtrace-log ,fmt ,@args))))
-  
+        `(progn (always-log ,fmt ,@args)))))
 
 #-cl-jupyter-log
 (defmacro logg (level fmt &rest args)
   nil)
 
+(defun logg-backtrace (fmt &rest args)
+  "Log the passed ARGS using the format string FMT and its
+ arguments ARGS and add a backtrace.  Errors with backtraces are always logged."
+  (with-log-file (*log-file*)
+    (format *log-file* "ERROR: ~%")
+    (apply #'format *log-file* fmt args)
+    (trivial-backtrace:print-backtrace-to-stream *log-file*)))
+  
 (defmacro vbinds (binders expr &body body)
   "An abbreviation for MULTIPLE-VALUE-BIND."
   (labels ((replace-underscores (bs &optional (result nil) (fresh-vars nil) (replaced nil))
