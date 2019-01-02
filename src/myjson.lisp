@@ -487,7 +487,7 @@ yeah !")
 
 
 (defmethod encode-json (stream (thing float) &key (indent nil) (first-line nil))
-  (json-write stream (if first-line nil indent) nil (format nil "~A" thing)))
+  (json-write stream (if first-line nil indent) nil (format nil "~,6,,,,,'eG" thing)))
 
 (example 
  (encode-json-to-string -3.242E-12)
