@@ -37,7 +37,8 @@ entries - but I don't know how they work and I couldn't find any documentation o
   (let* ((filename prefix)
          (files (mapcar  (lambda (x)
                            (make-instance 'completion
-                                          :name (enough-namestring x)))
+                                          :name (enough-namestring x)
+                                          :metadata nil))
                          (append (directory (concatenate 'string filename "*/"))
                                  (directory (concatenate 'string filename "*.*"))
                                  (directory (concatenate 'string filename "*"))))))
