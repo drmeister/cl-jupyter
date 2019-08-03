@@ -206,7 +206,7 @@ be used with SETF."))
   (setf *log-level* 2))
 
 ;;; Enable the following if you want backtraces logged but nothing else.
-#+(or)
+;;#+(or)
 (eval-when (:execute :load-toplevel :compile-toplevel)
   (format t "Turning on cl-jupyter logging~%")
   (push :cl-jupyter-log *features*)
