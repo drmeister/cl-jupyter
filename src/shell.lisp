@@ -171,7 +171,11 @@ display the result.")
         (format *error-output* "~&"))
       (serious-condition (err)
         (format *error-output* "~&An error occurred of type: ~A: ~%  ~S~%"
-                (class-name (class-of err)) err))))
+                (class-name (class-of err)) err)
+        (format *error-output* "serious-condition backtrace:~%~A~%"
+                (with-output-to-string (sout)
+                  (let ((*print-pretty* nil))
+                    (trivial-backtrace:print-backtrace-to-stream sout)))))))
   (send-status-update (kernel-iopub (kernel shell)) msg "idle" :key (kernel-key shell)))
 
 
